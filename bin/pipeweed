@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require 'pipeweed/cli'
+Pipeweed::Cli.execute
