@@ -7,7 +7,19 @@ module Pipeweed
         base.extend(ClassMethods)
       end
       
-      Service = Struct.new(:name, :depends_on, :start)
+      class Service
+        attr_accessor :name, :depends_on
+        
+        def initialize (name, depends_on, start)
+          @name = name
+          @depends_on = depends_on
+          @start = start
+        end
+        
+        def start
+          @start.call
+        end
+      end
    
       class ServiceBuilder
         def name(name); @name = name; end

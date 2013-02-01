@@ -2,6 +2,9 @@ require 'pipeweed/dsl/repository'
 require 'pipeweed/dsl/service'
 require 'pipeweed/dsl/host'
 
+require 'rgl/adjacency'
+require 'rgl/dot'
+
 module Pipeweed
   class Dsl
     class Parser
@@ -33,6 +36,19 @@ module Pipeweed
             instance_eval(options[:string], options[:name] || "<eval>")
           end
         end
+        show_graph
+      end
+      
+      def show_graph
+        dg=RGL::DirectedAdjacencyGraph[]
+        @config.services.each do |name, s|
+          s.depends_on.each do |dep|
+            dg.add_edge("#{s.class.name.split('::').last}:#{name}", "#{dep.class.name.split('::').last}:#{dep.name}")
+          end
+        end
+        puts dg.to_s
+        puts dg.write_to_graphic_file('jpg')
+
       end
 
       def load_from_file(file, name=nil)
@@ -53,24 +69,26 @@ module Pipeweed
       
       def repository(name, &block)
         repo = Pipeweed::Dsl.create_repository(&block)
+        repo.name = name
         @config.repositories[name] = repo
         repo
       end
 
       def service (name, &block)
         s = Pipeweed::Dsl.create_service(&block)
+        s.name = name
         @config.services[name] = s
         s
       end
 
       def host (name, &block)
         h = Pipeweed::Dsl.create_host(&block)
+        h.name = name
         @config.hosts[name] = h
         h
       end
       
       class ConfigAccessor 
-
         def self.config
            Thread.current[:pipeweed_parser_config] 
         end
@@ -78,7 +96,7 @@ module Pipeweed
       
       class Service < ConfigAccessor
         def self.[](key)
-          raise ArgumentError, "no service with name #{key}" unless config.repositories.has_key?(key)
+          raise ArgumentError, "no service with name #{key}" unless config.services.has_key?(key)
           config.services[key]
         end
       end

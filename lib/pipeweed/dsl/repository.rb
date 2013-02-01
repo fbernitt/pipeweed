@@ -7,14 +7,14 @@ module Pipeweed
         base.extend(ClassMethods)
       end
       
-      Repository = Struct.new(:scm, :url, :branch)
+      Repository = Struct.new(:name, :scm, :url, :branch)
    
       class RepositoryBuilder
         def scm(type=:git); @scm = type; end
         def url(u=""); @url = u; end
         def branch(name = :default); @branch = name; end
         def build
-          Repository.new(@scm, @url, @branch)
+          Repository.new('undefined', @scm, @url, @branch)
         end
       end
       

@@ -7,7 +7,18 @@ module Pipeweed
         base.extend(ClassMethods)
       end
       
-      Host = Struct.new(:fqdn, :runs)
+      class Host
+        attr_accessor :fqdn, :runs, :name
+        
+        def initialize (fqdn, runs)
+          @fqdn = fqdn
+          @runs = runs
+        end
+        
+        def depends_on
+          @runs
+        end
+      end
    
       class HostBuilder
         def fqdn(name); @name = name; end

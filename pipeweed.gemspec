@@ -21,5 +21,5 @@ Gem::Specification.new do |s|
   s.add_dependency(%q<docile>, "~>1.0.1")
   s.add_dependency(%q<rspec>)  
   s.add_dependency(%q<mocha>, "~>0.13.2")
-
+  s.add_dependency(%q<rgl>, "~>0.4.0")
 end
